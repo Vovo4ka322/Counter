@@ -21,6 +21,6 @@ public class TimeViewer : MonoBehaviour
 
     private void OnChanged(int value)
     {
-        _textMash.text = _counter.Increase.ToString();
+        _textMash.text = _counter.NumberForIncrease.ToString();
     }
 }

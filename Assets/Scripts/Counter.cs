@@ -1,27 +1,27 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-    public event Action<int> Changed;
-
     private float _timeToIncrease = 0.5f;
     private int _maxValue = int.MaxValue;
     private bool _isWorking = true;
+    private string _counter = nameof(IncreaseCounter);
 
-    public int Increase { get; private set; } = 1;
+    public event Action<int> Changed;
 
-    private IEnumerator Enumerator()
+    public int NumberForIncrease { get; private set; } = 1;
+
+    private IEnumerator IncreaseCounter()
     {
-        WaitForSeconds halfSecond = new WaitForSeconds(_timeToIncrease);
-
-        for (int i = 0; i < _maxValue; i++)
+        while (NumberForIncrease < _maxValue)
         {
-            Increase++;
-            Changed?.Invoke(Increase);
+            NumberForIncrease++;
+            Changed?.Invoke(NumberForIncrease);
 
-            yield return halfSecond;
+            yield return new WaitForSeconds(_timeToIncrease);
         }
     }
 
@@ -29,7 +29,7 @@ public class Counter : MonoBehaviour
     {
         if (_isWorking)
         {
-            StartCoroutine(Enumerator());
+            StartCoroutine(_counter);
 
             _isWorking = false;
         }
@@ -39,7 +39,7 @@ public class Counter : MonoBehaviour
     {
         if (_isWorking == false)
         {
-            StopAllCoroutines();
+            StopCoroutine(_counter);
 
             _isWorking = true;
         }
