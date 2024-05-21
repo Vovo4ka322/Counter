@@ -8,28 +8,22 @@ public class Counter : MonoBehaviour
     private float _timeToIncrease = 0.5f;
     private int _maxValue = int.MaxValue;
     private bool _isWorking = true;
-    private string _counter = nameof(IncreaseCounter);
+    private IEnumerator _coroutine;
 
     public event Action<int> Changed;
 
     public int NumberForIncrease { get; private set; } = 1;
 
-    private IEnumerator IncreaseCounter()
+    private void Start()
     {
-        while (NumberForIncrease < _maxValue)
-        {
-            NumberForIncrease++;
-            Changed?.Invoke(NumberForIncrease);
-
-            yield return new WaitForSeconds(_timeToIncrease);
-        }
+        _coroutine = IncreaseCounter();
     }
 
     public void StartWork()
     {
         if (_isWorking)
         {
-            StartCoroutine(_counter);
+            StartCoroutine(_coroutine);
 
             _isWorking = false;
         }
@@ -37,11 +31,24 @@ public class Counter : MonoBehaviour
 
     public void StopWork()
     {
-        if (_isWorking == false)
+        if (_isWorking == false && _coroutine != null)
         {
-            StopCoroutine(_counter);
+            StopCoroutine(_coroutine);
 
             _isWorking = true;
+        }
+    }
+
+    private IEnumerator IncreaseCounter()
+    {
+        WaitForSeconds halfSecond = new(_timeToIncrease);
+
+        while (NumberForIncrease < _maxValue)
+        {
+            NumberForIncrease++;
+            Changed?.Invoke(NumberForIncrease);
+
+            yield return halfSecond;
         }
     }
 }
